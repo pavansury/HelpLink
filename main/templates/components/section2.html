@@ -1,5 +1,5 @@
 <!-- templates/components/section2.html -->
-<section class="section-why-help">
+<section class="section-why-help" id="help-section">
   <div class="section-header">
     <h2>Why Should You Help?</h2>
     <p>
@@ -36,31 +36,49 @@
 
 <style>
     .section-why-help {
-        background: white;
+        background: linear-gradient(145deg, #f0f4f8, #ffffff);
         padding: 80px 5%;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 48px;
         font-family: 'Arimo', sans-serif;
+        opacity: 0; /* Start hidden */
+        transform: translateY(30px); /* Start off-screen */
+        transition: opacity 1s, transform 1s; /* Smooth transition */
+    }
+
+    .section-why-help.visible {
+        opacity: 1; /* Fade in */
+        transform: translateY(0); /* Move into view */
     }
 
     .section-why-help .section-header {
         text-align: center;
         max-width: 700px;
+        opacity: 0; /* Start hidden */
+        transform: translateY(20px); /* Start slightly down */
+        transition: opacity 1s, transform 1s;
+    }
+
+    .section-why-help.visible .section-header {
+        opacity: 1;
+        transform: translateY(0); /* Move into view */
     }
 
     .section-why-help .section-header h2 {
         color: #101828;
-        font-size: 24px;
-        font-weight: 500;
+        font-size: 28px;
+        font-weight: 600;
         line-height: 1.4;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .section-why-help .section-header p {
         color: #4A5565;
-        font-size: 16px;
+        font-size: 18px;
         line-height: 1.6;
     }
 
@@ -73,35 +91,49 @@
     }
 
     .help-card {
-        background: linear-gradient(135deg, white 0%, #F9FAFB 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #F9FAFB 100%);
         border: 1px solid #E5E7EB;
         border-radius: 16px;
         padding: 32px;
         display: flex;
         flex-direction: column;
         gap: 12px;
-        transition: all 0.3s ease;
+        transition: all 0.3s ease-in-out;
+        transform: scale(1);
+        opacity: 0; /* Cards start hidden */
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .section-why-help.visible .help-card {
+        opacity: 1; /* Fade in cards */
+        transform: translateY(20px); /* Slide up effect */
     }
 
     .help-card:hover {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-        transform: translateY(-4px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #E5F2FF 0%, #F9FAFB 100%);
     }
 
     .help-card .icon {
         font-size: 48px;
         line-height: 1;
+        transition: transform 0.3s ease;
+    }
+
+    .help-card:hover .icon {
+        transform: scale(1.2);
     }
 
     .help-card h3 {
         color: #101828;
-        font-size: 18px;
+        font-size: 20px;
         margin: 0;
     }
 
     .help-card p {
         color: #4A5565;
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.6;
     }
 
@@ -109,18 +141,35 @@
     @media (max-width: 768px) {
         .section-why-help {
             padding: 60px 20px;
-    }
+        }
 
-    .section-why-help .section-header h2 {
-        font-size: 20px;
-    }
+        .section-why-help .section-header h2 {
+            font-size: 22px;
+        }
 
-    .card-container {
-        gap: 16px;
-    }
+        .card-container {
+            gap: 16px;
+        }
 
-    .help-card {
-        padding: 24px;
-    }
+        .help-card {
+            padding: 24px;
+        }
     }
 </style>
+
+<script>
+    // Intersection Observer to detect when the section is in view
+    const section = document.getElementById('help-section');
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                section.classList.add('visible'); // Add 'visible' class when section is in view
+                observer.unobserve(entry.target); // Stop observing after the first time it comes into view
+            }
+        });
+    }, {
+        threshold: 0.3 // Trigger when 30% of the section is visible
+    });
+
+    observer.observe(section);
+</script>
