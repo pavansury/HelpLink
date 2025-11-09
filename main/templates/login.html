@@ -70,46 +70,30 @@
         </div>
 
         <form method="POST" class="space-y-6">
-          {% csrf_token %}
-          <div>
-            <label for="email" class="block text-gray-700 font-medium">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="your@email.com"
-              required
-              class="mt-2 w-full border-gray-300 rounded-lg focus:ring-rose-500 focus:border-rose-500 p-2.5"
-            />
-          </div>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div>
+    <label for="id_username" class="block text-gray-700 font-medium">Email</label>
+    {{ form.username }}
+  </div>
+  <div>
+    <label for="id_password" class="block text-gray-700 font-medium">Password</label>
+    {{ form.password }}
+  </div>
 
-          <div>
-            <label for="password" class="block text-gray-700 font-medium">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-              required
-              class="mt-2 w-full border-gray-300 rounded-lg focus:ring-rose-500 focus:border-rose-500 p-2.5"
-            />
-          </div>
+  <div class="flex items-center justify-between text-sm">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <input type="checkbox" class="rounded border-gray-300" />
+      <span class="text-gray-600">Remember me</span>
+    </label>
+    <a href="#" class="text-rose-600 hover:text-rose-700">Forgot password?</a>
+  </div>
 
-          <div class="flex items-center justify-between text-sm">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" class="rounded border-gray-300" />
-              <span class="text-gray-600">Remember me</span>
-            </label>
-            <a href="#" class="text-rose-600 hover:text-rose-700">Forgot password?</a>
-          </div>
+  <button type="submit" class="w-full py-2.5 rounded-lg bg-gradient-to-r from-rose-500 to-orange-500 text-white font-semibold">
+    Sign In
+  </button>
+</form>
 
-          <button
-            type="submit"
-            class="w-full py-2.5 rounded-lg bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white font-semibold transition-all"
-          >
-            Sign In
-          </button>
-        </form>
 
         <p class="text-center mt-6 text-gray-600">
           Don’t have an account?

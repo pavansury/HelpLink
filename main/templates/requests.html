@@ -1,5 +1,25 @@
 {% extends 'base.html' %}
 {% load static %}
+<div class="container mx-auto p-6">
+  <h2 class="text-xl font-semibold mb-4">Create a Help Request</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="mb-3">
+      <label>Title</label>
+      {{ form.title }}
+    </div>
+    <div class="mb-3">
+      <label>Description</label>
+      {{ form.description }}
+    </div>
+    <div class="mb-3">
+      <label>Category</label>
+      {{ form.category }}
+    </div>
+    <button type="submit" class="px-4 py-2 rounded bg-rose-500 text-white">Submit</button>
+  </form>
+</div>
 
 {% block title %}Kindness Community{% endblock %}
 
