@@ -131,14 +131,15 @@
               {{ form.confirm_password.errors }}
             </div>
 
-            <div class="flex items-start gap-2">
-              <input type="checkbox" required class="mt-1" />
-              <p class="text-sm text-gray-600">
-                I agree to the
-                <a href="#" class="text-rose-600 hover:text-rose-700">Terms of Service</a> and
-                <a href="#" class="text-rose-600 hover:text-rose-700">Privacy Policy</a>
-              </p>
-            </div>
+            <div class="flex items-center space-x-2 text-left">
+  <input type="checkbox" required class="w-4 h-4 text-rose-600 border-gray-300 rounded focus:ring-rose-500" />
+  <label class="text-sm text-gray-600">
+    I agree to the
+    <a href="#" class="text-rose-600 hover:text-rose-700">Terms of Service</a> and
+    <a href="#" class="text-rose-600 hover:text-rose-700">Privacy Policy</a>
+  </label>
+</div>
+
 
             <button
               type="submit"
