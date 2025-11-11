@@ -2,32 +2,60 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Notifications – HelpLink</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
   <body class="min-h-screen bg-gradient-to-br from-orange-50 via-rose-50 to-purple-50 p-6">
-    <div class="max-w-2xl mx-auto bg-white/80 rounded-2xl shadow-xl p-6 border border-gray-200">
-      <h1 class="text-2xl font-semibold text-gray-900 mb-4 text-center">🔔 Notifications</h1>
+    <div class="max-w-3xl mx-auto bg-white/80 rounded-2xl shadow-xl p-6 border border-gray-200">
+      <h1 class="text-2xl font-semibold text-gray-900 mb-6 text-center">🔔 Notifications</h1>
 
       {% if notifications %}
-        <ul class="space-y-4">
+        <ul class="space-y-5">
           {% for n in notifications %}
-            <li class="p-4 rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition">
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="text-gray-800 font-medium">
-                    {{ n.message }}
-                  </p>
-                  {% if n.help_request %}
-                    <p class="text-sm text-gray-500 mt-1">
-                      Related to request: <span class="font-medium">{{ n.help_request.title }}</span>
-                    </p>
-                  {% endif %}
-                </div>
-                <span class="text-xs text-gray-400">{{ n.created_at|date:"M d, H:i" }}</span>
+            <li class="p-5 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition duration-200">
+              <div>
+                <p class="text-gray-800 font-semibold text-lg">{{ n.message }}</p>
+                <span class="block text-xs text-gray-400 mt-1">
+                  {{ n.created_at|date:"M d, Y – H:i" }}
+                </span>
               </div>
+
+              {% if n.help_request %}
+              <div class="mt-4 border-t pt-3 text-sm text-gray-700">
+                <p><b>Title:</b> {{ n.help_request.title }}</p>
+                <p><b>Description:</b> {{ n.help_request.description }}</p>
+                <p><b>Location:</b> {{ n.help_request.location }}</p>
+                <p><b>Category:</b> {{ n.help_request.category }}</p>
+                <p>
+                  <b>Urgency:</b>
+                  <span
+                    class="{% if n.help_request.urgency == 'High' %}text-red-500{% elif n.help_request.urgency == 'Medium' %}text-yellow-500{% else %}text-green-500{% endif %}"
+                    >{{ n.help_request.urgency }}</span
+                  >
+                </p>
+
+                {% if n.help_request.is_completed %}
+                  <p class="mt-2 text-green-700 font-semibold">✅ Task Completed</p>
+                {% elif n.help_request.is_accepted %}
+                  <p class="mt-2 text-blue-600 font-semibold">🟢 Request Accepted</p>
+                  <a
+                    href="{% url 'complete_request' n.help_request.id %}"
+                    class="mt-3 inline-block bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 text-sm"
+                    >Mark as Completed</a
+                  >
+                {% else %}
+                  <div class="flex space-x-3 mt-3">
+                    <a
+                      href="{% url 'accept_request' n.help_request.id %}"
+                      class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-sm"
+                      >Accept Request</a
+                    >
+                  </div>
+                {% endif %}
+              </div>
+              {% endif %}
             </li>
           {% endfor %}
         </ul>
@@ -35,8 +63,8 @@
         <p class="text-gray-600 text-center">No notifications yet 🎉</p>
       {% endif %}
 
-      <div class="text-center mt-6">
-        <a href="{% url 'requests' %}" class="text-rose-500 hover:underline">← Back to Requests</a>
+      <div class="text-center mt-8">
+        <a href="{% url 'requests' %}" class="text-rose-500 hover:underline text-sm">← Back to Requests</a>
       </div>
     </div>
   </body>

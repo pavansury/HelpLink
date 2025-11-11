@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     full_name = models.CharField(max_length=200, blank=True)
@@ -26,6 +27,7 @@ class HelpRequest(models.Model):
         ('Completed', 'Completed'),
         ('Rejected', 'Rejected'),
     ]
+
     CATEGORY_CHOICES = [
         ('Loneliness', 'Loneliness'),
         ('Stress Handling', 'Stress Handling'),
@@ -39,7 +41,7 @@ class HelpRequest(models.Model):
         ('Moving', 'Moving'),
         ('Other', 'Other'),
     ]
-    
+
     URGENCY_CHOICES = [
         ('low', 'Low'),
         ('medium', 'Medium'),
@@ -57,17 +59,14 @@ class HelpRequest(models.Model):
     requester_initials = models.CharField(max_length=5)
     date_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    is_accepted = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.title} - {self.user.username}"
+        return self.title
 
 
-def create_or_update_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
-    else:
-        instance.profile.save()
-    
 class Notification(models.Model):
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
     sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_notifications')

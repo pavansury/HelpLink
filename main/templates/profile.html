@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ profile_user.user.username }} – HelpLink</title>
+    <title>{{ profile_user.username|default:"Profile" }} – HelpLink</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,14 +44,14 @@
             {% else %}
               <div
                 class="w-32 h-32 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-                {{ profile_user.user.username|slice:":1"|upper }}
+                {{ profile_user.username|slice:":1"|upper|default:"U" }}
               </div>
             {% endif %}
           </div>
 
           <div class="flex-1 text-center md:text-left">
             <h1 class="text-gray-900 text-2xl font-semibold mb-2">
-              {{ profile_user.get_full_name|default:profile_user.username }}
+              {{ profile_user.get_full_name|default:profile_user.username|default:"User" }}
             </h1>
 
             <div class="flex flex-wrap gap-2 justify-center md:justify-start mb-3">
@@ -78,7 +78,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span>Joined {{ profile_user.user.date_joined|date:"F Y" }}</span>
+              <span>Joined {{ profile_user.date_joined|date:"F Y" }}</span>
             </div>
           </div>
         </div>
@@ -92,6 +92,8 @@
           <div class="text-gray-900 text-xl font-semibold mb-1">{{ value }}</div>
           <p class="text-sm text-gray-600">{{ label }}</p>
         </div>
+        {% empty %}
+        <p class="text-gray-500 text-center col-span-4">No stats available.</p>
         {% endfor %}
       </div>
 
@@ -113,11 +115,13 @@
                     <span class="text-gray-900 font-semibold">{{ cat.count }}</span>
                   </div>
                   <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                    <div class="h-2 bg-gradient-to-r {{ cat.color }}" style="width: {{ cat.progress }}%"></div>
+                    <div class="h-2 bg-gradient-to-r {{ cat.color }}" style="width: {{ cat.progress|default:0 }}%"></div>
                   </div>
                 </div>
               </div>
             </div>
+            {% empty %}
+            <p class="text-gray-500 text-center">No categories yet.</p>
             {% endfor %}
           </div>
         </div>
@@ -127,26 +131,32 @@
           <h2 class="text-gray-900 text-xl font-semibold mb-6">Recent Activity</h2>
           <div class="space-y-4">
             {% for activity in recent_activity %}
-            <div onclick="window.location.href='{% url 'profile' activity.person.username %}'"
-                 class="clickable flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0">
-              <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                {% if activity.avatar %}
-                  <img src="{{ activity.avatar }}" class="w-full h-full object-cover">
-                {% else %}
-                  <div class="w-full h-full bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-white font-bold">
-                    {{ activity.person|slice:":1"|upper }}
+              {% if activity.person and activity.person.username %}
+                <div onclick="window.location.href='{% url 'profile' activity.person.username %}'"
+                     class="clickable flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0">
+              {% else %}
+                <div class="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0">
+              {% endif %}
+                  <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                    {% if activity.avatar %}
+                      <img src="{{ activity.avatar }}" class="w-full h-full object-cover">
+                    {% else %}
+                      <div class="w-full h-full bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center text-white font-bold">
+                        {{ activity.person|default:"U"|slice:":1"|upper }}
+                      </div>
+                    {% endif %}
                   </div>
-                {% endif %}
-              </div>
-              <div class="flex-1">
-                <p class="text-gray-900">{{ activity.action }}</p>
-                <p class="text-sm text-gray-600">for {{ activity.person }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="border border-gray-300 text-xs rounded-full px-2 py-0.5">{{ activity.category }}</span>
-                  <span class="text-xs text-gray-500">{{ activity.time }}</span>
+                  <div class="flex-1">
+                    <p class="text-gray-900">{{ activity.action|default:"No action specified" }}</p>
+                    <p class="text-sm text-gray-600">for {{ activity.person|default:"Unknown" }}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="border border-gray-300 text-xs rounded-full px-2 py-0.5">{{ activity.category|default:"General" }}</span>
+                      <span class="text-xs text-gray-500">{{ activity.time|default:"Recently" }}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center">No recent activities found.</p>
             {% endfor %}
           </div>
         </div>
@@ -164,15 +174,17 @@
                       {% else %}
                         border-gray-200 bg-gray-50 opacity-60
                       {% endif %}">
-            <div class="text-4xl mb-2">{{ a.icon }}</div>
-            <h3 class="text-gray-900 mb-1 font-medium">{{ a.name }}</h3>
-            <p class="text-xs text-gray-600">{{ a.description }}</p>
+            <div class="text-4xl mb-2">{{ a.icon|default:"🏅" }}</div>
+            <h3 class="text-gray-900 mb-1 font-medium">{{ a.name|default:"Achievement" }}</h3>
+            <p class="text-xs text-gray-600">{{ a.description|default:"No description" }}</p>
             {% if a.unlocked %}
             <span class="mt-2 inline-block bg-gradient-to-r from-rose-500 to-orange-500 text-white text-xs px-3 py-1 rounded-full">
               Unlocked
             </span>
             {% endif %}
           </div>
+          {% empty %}
+          <p class="text-gray-500 text-center col-span-3">No achievements yet.</p>
           {% endfor %}
         </div>
       </div>
@@ -193,10 +205,8 @@
         </div>
       </div>
 
-      <br />
-
-      <!-- Logout Button -->
-      <div class="flex justify-center mb-6">
+      <!-- Logout -->
+      <div class="flex justify-center mt-8">
         <form action="{% url 'logout' %}" method="post">
           {% csrf_token %}
           <button type="submit"
@@ -205,6 +215,7 @@
           </button>
         </form>
       </div>
+
     </div>
 
     <script>
@@ -214,14 +225,8 @@
         document.querySelectorAll('.clickable').forEach(c => c.classList.remove('active-card'));
         el.classList.add('active-card');
       }
-
-      function activateCategory(el) {
-        el.classList.toggle('active-card');
-      }
-
-      function activateAchievement(el) {
-        el.classList.toggle('active-card');
-      }
+      function activateCategory(el) { el.classList.toggle('active-card'); }
+      function activateAchievement(el) { el.classList.toggle('active-card'); }
     </script>
   </body>
 </html>
