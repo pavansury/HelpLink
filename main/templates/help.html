@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offer Help – HelpLink</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  </head>
+
+  <body
+    class="min-h-screen bg-gradient-to-br from-orange-50 via-rose-50 to-purple-50 flex items-center justify-center p-6"
+  >
+    <!-- Main Help Card -->
+    <div
+      id="help-card"
+      data-aos="zoom-in"
+      class="max-w-lg w-full bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200"
+    >
+      <div class="text-center mb-6">
+        <div
+          class="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-orange-500 text-white text-3xl shadow-lg"
+        >
+          ❤️
+        </div>
+        <h1 class="text-2xl font-semibold text-gray-900 mt-4">
+          You’re About to Help!
+        </h1>
+        <p class="text-gray-600 mt-2">
+          Confirm your willingness to assist and leave a short message for the requester.
+        </p>
+      </div>
+
+      <!-- ✅ Help Form -->
+      <form id="helpForm" method="post" class="space-y-4" action="{% url 'help' help_request.id %}">
+        {% csrf_token %}
+        <div>
+          <label for="message" class="block text-gray-700 font-medium mb-1">Your Message</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="4"
+            class="w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-rose-400 focus:outline-none p-3"
+            placeholder="Write a short note, e.g. ‘I’d love to help you with this!’"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between mt-6">
+          <a href="{% url 'requests' %}" class="text-gray-500 hover:text-rose-600 transition">← Back to Requests</a>
+          <button
+            type="submit"
+            class="bg-gradient-to-r from-rose-500 to-orange-500 text-white px-6 py-2 rounded-full shadow hover:opacity-90 transition">
+            Confirm Help
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ✅ Success Screen -->
+    <div
+      id="success-screen"
+      class="hidden flex flex-col items-center justify-center text-center"
+    >
+      <div
+        class="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center animate-bounce"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-12 h-12 text-white"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="3"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-semibold text-green-700 mt-4">Help Sent!</h2>
+      <p class="text-gray-600 mt-2">Redirecting back to requests...</p>
+    </div>
+
+    <!-- ✅ JavaScript -->
+    <script>
+      AOS.init({ duration: 800, once: true });
+
+      document.getElementById("helpForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const message = document.getElementById("message").value;
+
+        // Send POST request to backend
+        await fetch(window.location.href, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}",
+          },
+          body: new URLSearchParams({ message }),
+        });
+
+        // Animate success screen
+        document.getElementById("help-card").classList.add("hidden");
+        document.getElementById("success-screen").classList.remove("hidden");
+
+        // Redirect to requests page after short delay
+        setTimeout(() => {
+          window.location.href = "{% url 'requests' %}";
+        }, 2000);
+      });
+    </script>
+  </body>
+</html>

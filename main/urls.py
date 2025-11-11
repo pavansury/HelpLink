@@ -10,4 +10,7 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('requests/', views.requests_list, name='requests'),
     path('add-request/', views.add_request, name='addRequest'),
+    #path('help/', views.help_view, name='help'),
+    path('help/<int:request_id>/', views.help_view, name='help'),
+    path('notifications/', views.notifications_view, name='notifications'),
 ]

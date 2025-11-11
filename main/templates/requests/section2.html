@@ -52,19 +52,18 @@
           {% if request.urgency == 'low' %}low
           {% elif request.urgency == 'medium' %}medium
           {% elif request.urgency == 'high' %}high{% endif %}">
-          {{ request.urgency|title }} Priority
+          {{ request.urgency|title }} Category
         </span>
         <span class="tag category">{{ request.category }}</span>
       </div>
 
       <!-- Footer -->
       <div class="request-footer">
-        <span>📍 {{ request.location }}</span>
         <span>🕒 {{ request.timeAgo }}</span>
       </div>
 
       <!-- Button -->
-      <button class="help-btn">❤️ I Can Help</button>
+      <button class="help-btn" onclick="openHelp({{request.id}})">❤️ I Can Help</button>
     </div>
     {% endfor %}
   </div>
@@ -93,6 +92,9 @@
         card.style.display = 'none';
       }
     });
+  }
+  function openHelp(requestId) {
+    window.location.href = `/help/${requestId}/`;
   }
 </script>
 

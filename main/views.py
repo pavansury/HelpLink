@@ -4,8 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.urls import reverse
-
-from .models import HelpRequest, UserProfile
+from .models import HelpRequest, Notification
 from .forms import SignupForm, LoginForm, HelpRequestForm
 
 
@@ -57,7 +56,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect("/")  # Redirect to homepage
+            return redirect("home")  # Redirect to homepage
         else:
             messages.error(request, "Invalid username or password.")
             return redirect("login")
@@ -169,3 +168,34 @@ def add_request(request):
 # -------------------- SETTINGS PAGE --------------------
 def settings_page(request):
     return render(request, 'settings.html')
+
+#def help_view(request):
+ #   return render(request, 'help.html')
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import HelpRequest, Notification
+
+@login_required
+def help_view(request, request_id):
+    help_request = get_object_or_404(HelpRequest, id=request_id)
+
+    if request.method == 'POST':
+        message = request.POST.get('message', '')
+        
+        # Create a notification for the original requester
+        Notification.objects.create(
+            recipient=help_request.user,  # the one who made the request
+            sender=request.user,          # the helper
+            help_request=help_request,
+            message=message or f"{request.user.username} offered help on your request '{help_request.title}'!"
+        )
+
+        return redirect('requests')  # Redirect after confirmation
+
+    return render(request, 'help.html', {'help_request': help_request})
+
+def notifications_view(request):
+    notifications = Notification.objects.filter(recipient=request.user)
+    return render(request, 'notifications.html', {'notifications': notifications})

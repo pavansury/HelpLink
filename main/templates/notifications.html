@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Notifications – HelpLink</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="min-h-screen bg-gradient-to-br from-orange-50 via-rose-50 to-purple-50 p-6">
+    <div class="max-w-2xl mx-auto bg-white/80 rounded-2xl shadow-xl p-6 border border-gray-200">
+      <h1 class="text-2xl font-semibold text-gray-900 mb-4 text-center">🔔 Notifications</h1>
+
+      {% if notifications %}
+        <ul class="space-y-4">
+          {% for n in notifications %}
+            <li class="p-4 rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-gray-800 font-medium">
+                    {{ n.message }}
+                  </p>
+                  {% if n.help_request %}
+                    <p class="text-sm text-gray-500 mt-1">
+                      Related to request: <span class="font-medium">{{ n.help_request.title }}</span>
+                    </p>
+                  {% endif %}
+                </div>
+                <span class="text-xs text-gray-400">{{ n.created_at|date:"M d, H:i" }}</span>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-gray-600 text-center">No notifications yet 🎉</p>
+      {% endif %}
+
+      <div class="text-center mt-6">
+        <a href="{% url 'requests' %}" class="text-rose-500 hover:underline">← Back to Requests</a>
+      </div>
+    </div>
+  </body>
+</html>
