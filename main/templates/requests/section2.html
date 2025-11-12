@@ -65,7 +65,7 @@
           {% if request.urgency == 'low' %}low
           {% elif request.urgency == 'medium' %}medium
           {% elif request.urgency == 'high' %}high{% endif %}">
-          {{ request.urgency|title }} Urgency
+          {{ request.urgency|title }} Category
         </span>
         <span class="tag category">{{ request.category }}</span>
       </div>
