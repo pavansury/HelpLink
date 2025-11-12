@@ -50,3 +50,8 @@ class HelpRequestForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
         }
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['full_name', 'avatar', 'location', 'phone', 'bio']

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
 from .models import HelpRequest, Notification, UserProfile
-from .forms import SignupForm, LoginForm, HelpRequestForm
+from .forms import SignupForm, LoginForm, HelpRequestForm, EditProfileForm
 
 
 # -------------------- HOME PAGE --------------------
@@ -160,10 +160,11 @@ def requests_list(request):
 
     selected_category = request.GET.get('category')
 
+    # Filter requests
     if selected_category and selected_category != 'All':
-        requests_qs = HelpRequest.objects.filter(category=selected_category)
+        requests_qs = HelpRequest.objects.filter(category=selected_category, is_completed=False)
     else:
-        requests_qs = HelpRequest.objects.all()
+        requests_qs = HelpRequest.objects.filter(is_completed=False)
 
     context = {
         'requests': requests_qs.order_by('-date_created'),
@@ -247,3 +248,52 @@ def complete_request(request, id):
 def request_detail(request, request_id):
     help_request = get_object_or_404(HelpRequest, id=request_id)
     return render(request, "request_detail.html", {"help_request": help_request})
+
+@login_required
+def edit_profile(request, username):
+    profile = get_object_or_404(UserProfile, user__username=username)
+
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', username=username)
+    else:
+        form = EditProfileForm(instance=profile)  # <-- correct usage
+
+    return render(request, 'edit_profile.html', {'form': form, 'profile': profile})
+
+
+def profile(request):
+    user = request.user
+    help_requests = user.help_requests.all()
+    helped_requests = user.requests_helped.all()
+    return render(request, "profile.html", {
+        "profile_user": user,
+        "help_requests": help_requests,
+        "helped_requests": helped_requests,
+    })
+
+@login_required
+def accept_request(request, id):
+    help_request = get_object_or_404(HelpRequest, id=id)
+    help_request.is_accepted = True
+    help_request.save()
+
+    # Find the helper who offered help (assuming only one helper accepted)
+    # Get the latest notification with message containing "offered help"
+    offer_notification = Notification.objects.filter(
+        help_request=help_request,
+        sender__isnull=False
+    ).order_by('-created_at').first()
+
+    if offer_notification:
+        helper_user = offer_notification.sender
+        Notification.objects.create(
+            recipient=helper_user,   # ✅ Send to the helper, not owner
+            sender=help_request.user,  # Request owner
+            help_request=help_request,
+            message=f"🟢 Your help offer for '{help_request.title}' was accepted by {help_request.user.username}!"
+        )
+
+    return redirect('notifications')

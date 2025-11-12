@@ -10,7 +10,7 @@ urlpatterns = [
     # Profile URLs
     path('profile/', views.my_profile_redirect, name='my_profile_redirect'),
     path('profile/<str:username>/', views.profile_view, name='profile'),
-
+    path('profile/<str:username>/edit/', views.edit_profile, name='edit_profile'),
     path('requests/', views.requests_list, name='requests'),
     path('add-request/', views.add_request, name='addRequest'),
     path('help/<int:request_id>/', views.help_view, name='help'),
