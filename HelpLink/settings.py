@@ -81,42 +81,19 @@ WSGI_APPLICATION = "HelpLink.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-import dj_database_url
-from django.core.exceptions import ImproperlyConfigured
-import logging
-
-logger = logging.getLogger(__name__)
-
-# Prefer an explicit DATABASE_URL provided by the environment. Only fall back to a local
-# development URL when DEBUG is True. Fail fast in production if missing.
-env_database_url = config('DATABASE_URL', default=None)
-
-if env_database_url:
-    parsed_db = dj_database_url.parse(
-        env_database_url,
-        conn_max_age=600,
-        ssl_require=True
-    )
-    # Hide sensitive parts when logging
-    safe_db_info = {
-        'ENGINE': parsed_db.get('ENGINE'),
-        'HOST': parsed_db.get('HOST'),
-        'PORT': parsed_db.get('PORT'),
-        'NAME': parsed_db.get('NAME'),
-        'USER': parsed_db.get('USER')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='helplink_db'),
+        'USER': config('DB_USER', default='helplink_user'),
+        'PASSWORD': config('DB_PASSWORD', default='password'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
+        'OPTIONS': {
+            'sslmode': 'require' if not DEBUG else 'disable',
+        },
     }
-    logger.info(f"Configured database: {safe_db_info}")
-    DATABASES = {'default': parsed_db}
-elif DEBUG:
-    # Local dev fallback
-    local_url = 'postgresql://helplink_user:password@localhost:5432/helplink_db'
-    DATABASES = {'default': dj_database_url.parse(local_url, conn_max_age=600)}
-    logger.warning("DATABASE_URL not set; using local development database.")
-else:
-    # Production default: use Render database
-    render_url = 'postgresql://helplink_user:sujit%40helplink@dpg-ce12xxxxx-a.oregon-postgres.render.com:5432/helplink_db?sslmode=require'
-    DATABASES = {'default': dj_database_url.parse(render_url, conn_max_age=600, ssl_require=True)}
-    logger.info("Using default Render database configuration.")
+}
 
 
 # Password validation
