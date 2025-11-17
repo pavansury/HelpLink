@@ -75,8 +75,12 @@ WSGI_APPLICATION = "HelpLink.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "helplink_db",
+        "USER": "helplink_user",
+        "PASSWORD": "sujit@helplink",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 
