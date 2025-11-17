@@ -29,6 +29,10 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
+# Add Render.com domain support
+if not DEBUG:
+    ALLOWED_HOSTS.append('.onrender.com')
+
 
 # Application definition
 
