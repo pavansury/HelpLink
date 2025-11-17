@@ -85,7 +85,10 @@ import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='postgresql://helplink_user:sujit%40helplink@dpg-ce12xxxxx-a.oregon-postgres.render.com:5432/helplink_db')
+        default=config('DATABASE_URL', default='postgresql://helplink_user:sujit%40helplink@dpg-ce12xxxxx-a.oregon-postgres.render.com:5432/helplink_db'),
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=True
     )
 }
 
