@@ -12,4 +12,4 @@ services:
       - key: DEBUG
         value: false
       - key: ALLOWED_HOSTS
-        value: helplink.onrender.com,localhost,127.0.0.1
+        value: helplink-1.onrender.com,localhost,127.0.0.1
