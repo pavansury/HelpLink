@@ -113,7 +113,10 @@ elif DEBUG:
     DATABASES = {'default': dj_database_url.parse(local_url, conn_max_age=600)}
     logger.warning("DATABASE_URL not set; using local development database.")
 else:
-    raise ImproperlyConfigured("DATABASE_URL environment variable is required in production.")
+    # Production default: use Render database
+    render_url = 'postgresql://helplink_user:sujit%40helplink@dpg-ce12xxxxx-a.oregon-postgres.render.com:5432/helplink_db?sslmode=require'
+    DATABASES = {'default': dj_database_url.parse(render_url, conn_max_age=600, ssl_require=True)}
+    logger.info("Using default Render database configuration.")
 
 
 # Password validation
