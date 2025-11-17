@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: helplink
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn HelpLink.wsgi:application
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://helplink_user:sujit%40helplink@dpg-ce12xxxxx-a.oregon-postgres.render.com:5432/helplink_db
+      - key: SECRET_KEY
+        value: django-insecure-tdywcq2=kzy-h0vmkrmh$tg^2wfl&udcw6gn2_oqg2ce1xo%0c
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: helplink.onrender.com,localhost,127.0.0.1
